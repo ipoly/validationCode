@@ -2,7 +2,8 @@ class VCode {
   PGraphics pg;
   PImage img;
   String str;
-  int tSize = 25, shift = 5, grid = 10;
+  int tSize = 25, shift = 5, grid = 10, h, w;
+  View v;
 
   VCode() {
     init();
@@ -16,6 +17,7 @@ class VCode {
   void init() {
     str = "SC8";
     pg = createGraphics(width, height, P3D);
+    v = new View();
     noiseDetail(2, 0.39);
   }
 
@@ -30,19 +32,15 @@ class VCode {
     textSize(tSize);
     img = pg.get(0, 0, (int)textWidth(str)+shift, tSize+shift*2);
     img.loadPixels();
+    h = img.height;
+    w = img.width;
   }
 
-  void update() {
-    pg.beginDraw();
-    pg.lights();
-    pg.translate(0, 0, -300);
-    pg.rotateX(radians(30));
-    pg.rotate(radians(-20));
-    pg.background(255);
+  void drawGrid() {
+    pg.pushMatrix();
     pg.fill(255);
     
-    int h = img.height;
-    int w = img.width;
+    pg.translate(-w*grid/2,-h*grid/2);
     
     for (int x = 0; x < w-1; x++) {
       for (int y = 0; y < h-1; y++) {
@@ -68,6 +66,24 @@ class VCode {
         pg.endShape(CLOSE);
       }
     }
+    
+    pg.popMatrix();
+  }
+
+  void dragging() {
+    v.dragging();
+  }
+
+  void update() {
+    pg.beginDraw();
+    pg.lights();
+    pg.background(255);
+    pg.translate(width/2, height/2, -300);
+    pg.rotateX(radians(30));
+
+    v.rotate(pg);
+    drawGrid();
+
     pg.endDraw();
   }
 

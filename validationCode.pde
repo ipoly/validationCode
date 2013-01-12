@@ -10,9 +10,11 @@ void setup() {
 
 void draw() {
   background(255);
+  vc.update();
   vc.display();
 }
 
 void mouseDragged() {
+  vc.dragging();
 }
 
