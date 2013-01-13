@@ -2,25 +2,48 @@ class VCode {
   PGraphics pg;
   PImage img;
   String str;
-  int tSize = 25, shift = 5, grid = 10, h, w;
+  String[] chars = new String[6];
+  int tSize = 25, shift = 5, grid = 10, h, w, charIndex;
   View v;
 
   VCode() {
     init();
   }
 
+  // Init with text size
   VCode(int tSize_) {
     init();
     tSize = tSize_;
   }
 
+  // The main init function
   void init() {
-    str = "SC8";
+    str = "Test";
     pg = createGraphics(width, height, P3D);
     v = new View();
+    for (int i = chars.length; i != 0 ; i--) {
+      chars[i-1] = "";
+    }
     noiseDetail(2, 0.39);
   }
 
+  // Read char from input
+  void input() {
+    if (key == BACKSPACE) {
+      charIndex += chars.length - 1;
+      charIndex %= chars.length;
+      chars[charIndex] = "";
+    }
+    else {
+      chars[charIndex] = str(key);
+      charIndex++;
+    }
+    str = join(chars, "");
+    getImg();
+    charIndex %= chars.length;
+  }
+
+  // Parse the string to a img
   void getImg() {
     pg.beginDraw();
     pg.textSize(tSize);
@@ -36,12 +59,13 @@ class VCode {
     w = img.width;
   }
 
+  // Draw the img with grid
   void drawGrid() {
     pg.pushMatrix();
     pg.fill(255);
-    
-    pg.translate(-w*grid/2,-h*grid/2);
-    
+
+    pg.translate(-w*grid/2, -h*grid/2);
+
     for (int x = 0; x < w-1; x++) {
       for (int y = 0; y < h-1; y++) {
         PVector p1 = new PVector(x, y, 0), 
@@ -66,14 +90,16 @@ class VCode {
         pg.endShape(CLOSE);
       }
     }
-    
+
     pg.popMatrix();
   }
 
+  // Use View to deal with dragging 
   void dragging() {
     v.dragging();
   }
 
+  // Update the grid
   void update() {
     pg.beginDraw();
     pg.lights();
@@ -87,12 +113,14 @@ class VCode {
     pg.endDraw();
   }
 
+  // Set the z coordinate with x & y
   void zSet(PVector p) {
     color[] pix = img.pixels;
     int x = (int)p.x, y = (int)p.y;
     p.z = map(noise(x/10.0, y/10.0), 0, 1, 0, 10) + (float)brightness(pix[x + y*img.width])/grid*1.5;
     p.mult(grid);
   }
+
 
   void display() {
     image(pg, 0, 0);

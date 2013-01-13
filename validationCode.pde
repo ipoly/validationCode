@@ -18,3 +18,7 @@ void mouseDragged() {
   vc.dragging();
 }
 
+void keyTyped(){
+   vc.input(); 
+}
+
